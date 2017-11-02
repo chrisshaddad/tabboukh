@@ -5,6 +5,8 @@ import Drawer from "material-ui/Drawer";
 import AutoComplete from "material-ui/AutoComplete";
 import Chip from "material-ui/Chip";
 import { GridList, GridTile } from "material-ui/GridList";
+import { List, ListItem } from "material-ui/List";
+import Checkbox from "material-ui/Checkbox";
 
 const styles = {
   chip: {
@@ -13,7 +15,7 @@ const styles = {
   gridList: {
     width: "70%",
     marginLeft: "auto",
-    marginRight: "auto",
+    marginRight: "auto"
   }
 };
 
@@ -22,18 +24,30 @@ class App extends Component {
     super(props);
     this.state = {
       openDrawer: true,
-      availableIngredients: [],
-      allIngredients: [
-        "potato",
-        "tomatoe",
-        "lemon",
-        "chocolate",
-        "meat",
-        "chicken",
-        "salt",
-        "rabbit",
-        "garlic"
+      ingredientsCategories: [
+        {
+          name: "meats",
+          ingredients: ["meat", "chicken"]
+        },
+        {
+          name: "fruits",
+          ingredients: ["apple", "banana", "peach"]
+        },
+        {
+          name: "vegetables",
+          ingredients: ["lettuce", "cucumber", "cabbage", "potatoe", "lemon"]
+        },
+        {
+          name: "spices",
+          ingredients: ["salt", "pepper"]
+        },
+        {
+          name: "other",
+          ingredients: ["chocolate", "pepper"]
+        }
       ],
+      availableIngredients: [],
+      allIngredients: [],
       recipes: [
         {
           image: "/burger.jpg",
@@ -93,6 +107,19 @@ class App extends Component {
     };
   }
 
+  componentDidMount() {
+    let allIngredientsCombined = [];
+    for (let i = 0; i < this.state.ingredientsCategories.length; i++) {
+      allIngredientsCombined = [
+        ...allIngredientsCombined,
+        ...this.state.ingredientsCategories[i].ingredients
+      ];
+    }
+    this.setState({
+      allIngredients: allIngredientsCombined
+    });
+  }
+
   handleUpdateInput = ingredient => {
     if (this.isIngredientAvailable(ingredient)) {
       const newAllIngredients = [...this.state.allIngredients];
@@ -126,10 +153,7 @@ class App extends Component {
 
   isIngredientAvailable = ingredient => {
     for (let i = 0; i < this.state.allIngredients.length; i++) {
-      if (
-        this.state.allIngredients[i] === ingredient
-      )
-        return true;
+      if (this.state.allIngredients[i] === ingredient) return true;
     }
     return false;
   };
@@ -169,10 +193,10 @@ class App extends Component {
               {this.state.recipes
                 .filter(this.recipeHasAllIngredients)
                 .map((recipe, index) => (
-                 <GridTile key={index} title={recipe.name}>
+                  <GridTile key={index} title={recipe.name}>
                     <img src={recipe.image} alt="" />
                   </GridTile>
-              ))}
+                ))}
             </GridList>
           </div>
 
@@ -194,6 +218,38 @@ class App extends Component {
                   {ingredient}
                 </Chip>
               ))}
+              <List>
+                {this.state.ingredientsCategories.map((category, index) => {
+                  const nestedIngredients = category.ingredients.map(
+                    (ingredient, index) => {
+                      return (
+                        <ListItem
+                          primaryText={ingredient}
+                          key={index}
+                          leftCheckbox={
+                            <Checkbox
+                              checked={
+                                this.state.availableIngredients.indexOf(
+                                  ingredient
+                                ) > -1
+                                  ? true
+                                  : false
+                              }
+                            />
+                          }
+                        />
+                      );
+                    }
+                  );
+                  return (
+                    <ListItem
+                      primaryText={category.name}
+                      key={index}
+                      nestedItems={nestedIngredients}
+                    />
+                  );
+                })}
+              </List>
             </div>
           </Drawer>
         </MuiThemeProvider>
