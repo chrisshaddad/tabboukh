@@ -14,7 +14,6 @@ const styles = {
     width: "70%",
     marginLeft: "auto",
     marginRight: "auto",
-    height: 450
   }
 };
 
@@ -24,63 +23,70 @@ class App extends Component {
     this.state = {
       openDrawer: true,
       availableIngredients: [],
-      allIngredients: ["Potato", "Tomatoe", "Lemon"],
+      allIngredients: [
+        "potato",
+        "tomatoe",
+        "lemon",
+        "chocolate",
+        "meat",
+        "chicken",
+        "salt",
+        "rabbit",
+        "garlic"
+      ],
       recipes: [
         {
           image: "/burger.jpg",
-          name: "Burger"
+          name: "Burger",
+          ingredients: ["potato", "chocolate", "lemon"]
         },
         {
           image: "/cake.jpg",
-          name: "Cake"
+          name: "Cake",
+          ingredients: ["chocolate", "lemon"]
         },
         {
           image: "/burger.jpg",
-          name: "Burger"
+          name: "Burger",
+          ingredients: ["meat", "chocolate", "lemon"]
         },
         {
           image: "/cake.jpg",
-          name: "Cake"
+          name: "Cake",
+          ingredients: ["potato", "chocolate", "salt"]
         },
         {
           image: "/burger.jpg",
-          name: "Burger"
+          name: "Burger",
+          ingredients: ["potato", "chicken", "lemon"]
         },
         {
           image: "/cake.jpg",
-          name: "Cake"
+          name: "Cake",
+          ingredients: [
+            "potato",
+            "rabbit",
+            "lemon",
+            "salt",
+            "tomatoe",
+            "chicken",
+            "garlic"
+          ]
         },
         {
           image: "/burger.jpg",
-          name: "Burger"
+          name: "Burger",
+          ingredients: ["potato", "tomatoe", "tomatoe", "chicken", "garlic"]
         },
         {
           image: "/cake.jpg",
-          name: "Cake"
+          name: "Cake",
+          ingredients: ["potato", "tomatoe", "chicken", "garlic"]
         },
         {
           image: "/burger.jpg",
-          name: "Burger"
-        },
-        {
-          image: "/cake.jpg",
-          name: "Cake"
-        },
-        {
-          image: "/burger.jpg",
-          name: "Burger"
-        },
-        {
-          image: "/cake.jpg",
-          name: "Cake"
-        },
-        {
-          image: "/burger.jpg",
-          name: "Burger"
-        },
-        {
-          image: "/cake.jpg",
-          name: "Cake"
+          name: "Burger",
+          ingredients: ["potato", "garlic"]
         }
       ],
       recipeCols: 3
@@ -89,7 +95,7 @@ class App extends Component {
 
   handleUpdateInput = ingredient => {
     if (this.isIngredientAvailable(ingredient)) {
-      const newAllIngredients = [...this.state.allIngredients]//.slice();
+      const newAllIngredients = [...this.state.allIngredients];
       newAllIngredients.splice(
         this.state.allIngredients.indexOf(ingredient),
         1
@@ -99,8 +105,6 @@ class App extends Component {
         allIngredients: newAllIngredients
       });
     }
-    console.log(this.state.allIngredients);
-    console.log(this.state.availableIngredients);
   };
 
   handleToggle = () =>
@@ -111,26 +115,31 @@ class App extends Component {
 
   handleDeleteIngredient = ingredientIndex => {
     const ingredientToDelete = this.state.availableIngredients[ingredientIndex];
-    const newAvailableIngredients = [...this.state.availableIngredients]//.slice();
+    const newAvailableIngredients = [...this.state.availableIngredients];
     newAvailableIngredients.splice(ingredientIndex, 1);
 
     this.setState({
       allIngredients: [...this.state.allIngredients, ingredientToDelete],
       availableIngredients: newAvailableIngredients
     });
-
-    console.log(this.state.allIngredients);
-    console.log(this.state.availableIngredients);
   };
 
   isIngredientAvailable = ingredient => {
     for (let i = 0; i < this.state.allIngredients.length; i++) {
       if (
-        this.state.allIngredients[i].toLowerCase() === ingredient.toLowerCase()
+        this.state.allIngredients[i] === ingredient
       )
         return true;
     }
     return false;
+  };
+
+  recipeHasAllIngredients = recipe => {
+    for (let i = 0; i < recipe.ingredients.length; i++) {
+      if (this.state.availableIngredients.indexOf(recipe.ingredients[i]) === -1)
+        return false;
+    }
+    return true;
   };
 
   render() {
@@ -146,7 +155,7 @@ class App extends Component {
             }}
           >
             <AppBar
-              title="Title"
+              title="Tabboukh"
               iconClassNameRight="muidocs-icon-navigation-expand-more"
               onClick={this.handleToggle}
             />
@@ -157,10 +166,12 @@ class App extends Component {
               cols={this.state.recipeCols}
               padding={15}
             >
-              {this.state.recipes.map((recipe, index) => (
-                <GridTile key={index} title={recipe.name}>
-                  <img src={recipe.image} alt=""/>
-                </GridTile>
+              {this.state.recipes
+                .filter(this.recipeHasAllIngredients)
+                .map((recipe, index) => (
+                 <GridTile key={index} title={recipe.name}>
+                    <img src={recipe.image} alt="" />
+                  </GridTile>
               ))}
             </GridList>
           </div>
@@ -173,7 +184,7 @@ class App extends Component {
                 filter={AutoComplete.caseInsensitiveFilter}
                 maxSearchResults={8}
                 onNewRequest={this.handleUpdateInput}
-              />{" "}
+              />
               {this.state.availableIngredients.map((ingredient, index) => (
                 <Chip
                   key={index}
