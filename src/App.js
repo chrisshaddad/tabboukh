@@ -7,6 +7,7 @@ import Chip from "material-ui/Chip";
 import { GridList, GridTile } from "material-ui/GridList";
 import { List, ListItem } from "material-ui/List";
 import Checkbox from "material-ui/Checkbox";
+import { Card, CardMedia, CardTitle, CardText } from "material-ui/Card";
 
 const styles = {
   chip: {
@@ -16,6 +17,12 @@ const styles = {
     width: "70%",
     marginLeft: "auto",
     marginRight: "auto"
+  },
+  card: {
+    width: "70%",
+    marginLeft: "auto",
+    marginRight: "auto",
+    boxShadow: "none"
   }
 };
 
@@ -210,6 +217,20 @@ class App extends Component {
                   </a>
                 ))}
             </GridList>
+
+            <Card style={styles.card}>
+              <CardMedia
+                style={{ width: "65%", float: "left" }}
+                overlay={<CardTitle title="Recipe" />}
+              >
+                <img src="/cake.jpg" />
+              </CardMedia>
+
+              <CardTitle
+                style={{ width: "35%", float: "left", textAlign: "center" }}
+                title="Ingredients"
+              />
+            </Card>
           </div>
 
           <Drawer open={this.state.openDrawer}>
