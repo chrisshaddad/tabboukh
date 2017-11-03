@@ -35,7 +35,7 @@ class App extends Component {
         },
         {
           name: "vegetables",
-          ingredients: ["lettuce", "cucumber", "cabbage", "potatoe", "lemon"]
+          ingredients: ["lettuce", "cucumber", "cabbage", "potato", "lemon"]
         },
         {
           name: "spices",
@@ -43,7 +43,7 @@ class App extends Component {
         },
         {
           name: "other",
-          ingredients: ["chocolate", "pepper"]
+          ingredients: ["chocolate"]
         }
       ],
       availableIngredients: [],
@@ -90,7 +90,7 @@ class App extends Component {
         {
           image: "/burger.jpg",
           name: "Burger",
-          ingredients: ["potato", "tomatoe", "tomatoe", "chicken", "garlic"]
+          ingredients: ["potato", "tomatoe", "chicken", "garlic"]
         },
         {
           image: "/cake.jpg",
@@ -151,6 +151,16 @@ class App extends Component {
     });
   };
 
+  handleCheck = ingredient => {
+    if (this.state.availableIngredients.indexOf(ingredient) > -1) {
+      this.handleDeleteIngredient(
+        this.state.availableIngredients.indexOf(ingredient)
+      );
+    } else {
+      this.handleUpdateInput(ingredient);
+    }
+  };
+
   isIngredientAvailable = ingredient => {
     for (let i = 0; i < this.state.allIngredients.length; i++) {
       if (this.state.allIngredients[i] === ingredient) return true;
@@ -169,8 +179,8 @@ class App extends Component {
   render() {
     const paddingLeft = this.state.openDrawer ? 256 : 0;
     return (
-      <div className="App">
-        <MuiThemeProvider>
+      <MuiThemeProvider>
+        <div className="App">
           <div
             className={"row"}
             style={{
@@ -193,9 +203,11 @@ class App extends Component {
               {this.state.recipes
                 .filter(this.recipeHasAllIngredients)
                 .map((recipe, index) => (
-                  <GridTile key={index} title={recipe.name}>
-                    <img src={recipe.image} alt="" />
-                  </GridTile>
+                  <a href="/">
+                    <GridTile key={index} title={recipe.name}>
+                      <img src={recipe.image} alt="" />
+                    </GridTile>
+                  </a>
                 ))}
             </GridList>
           </div>
@@ -235,6 +247,7 @@ class App extends Component {
                                   ? true
                                   : false
                               }
+                              onCheck={evt => this.handleCheck(ingredient)}
                             />
                           }
                         />
@@ -252,8 +265,8 @@ class App extends Component {
               </List>
             </div>
           </Drawer>
-        </MuiThemeProvider>
-      </div>
+        </div>
+      </MuiThemeProvider>
     );
   }
 }
