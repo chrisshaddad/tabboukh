@@ -7,7 +7,7 @@ import Chip from "material-ui/Chip";
 import { GridList, GridTile } from "material-ui/GridList";
 import { List, ListItem } from "material-ui/List";
 import Checkbox from "material-ui/Checkbox";
-import { Card, CardMedia, CardTitle, CardText } from "material-ui/Card";
+import { Card, CardMedia, CardTitle } from "material-ui/Card";
 
 const styles = {
   chip: {
@@ -110,7 +110,46 @@ class App extends Component {
           ingredients: ["potato", "garlic"]
         }
       ],
-      recipeCols: 3
+      recipeCols: 3,
+      currentRecipe: {
+        id: "",
+        name: "Cake",
+        image: "/cake.jpg",
+        ingredientsAndQuantities: [
+          {
+            name: "potato",
+            quantity: "1/2 cup"
+          },
+          {
+            name: "honey",
+            quantity: "1 tbsp"
+          },
+          {
+            name: "sugar",
+            quantity: "2 cubes"
+          },
+          {
+            name: "eggs",
+            quantity: "2"
+          },
+          {
+            name: "milk",
+            quantity: "1 gallon"
+          },
+          {
+            name: "creme",
+            quantity: "1 bucket"
+          }
+        ],
+        howToMake: [
+          "Add 1 bucket of creme and stir it up real good",
+          "Praise Satan",
+          "Crack eggs",
+          "Mix everything up and put inside oven",
+          "Eat"
+        ],
+        ingredients: []
+      }
     };
   }
 
@@ -183,6 +222,13 @@ class App extends Component {
     return true;
   };
 
+  isEmpty(obj) {
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) return false;
+    }
+    return true;
+  }
+
   render() {
     const paddingLeft = this.state.openDrawer ? 256 : 0;
     return (
@@ -219,17 +265,56 @@ class App extends Component {
             </GridList>
 
             <Card style={styles.card}>
-              <CardMedia
-                style={{ width: "65%", float: "left" }}
-                overlay={<CardTitle title="Recipe" />}
+              <div>
+                <CardMedia
+                  style={{ width: "65%", float: "left" }}
+                  overlay={<CardTitle title={this.state.currentRecipe.name} />}
+                >
+                  <img
+                    src={this.state.currentRecipe.image}
+                    alt={this.state.currentRecipe.name}
+                  />
+                </CardMedia>
+                <CardTitle
+                  style={{ width: "35%", float: "right", textAlign: "center" }}
+                  title="Ingredients:"
+                />
+                <List
+                  style={{ width: "35%", float: "left", textAlign: "center" }}
+                >
+                  {this.state.currentRecipe.ingredientsAndQuantities.map(
+                    (ingredient, index) => (
+                      <ListItem
+                        disabled={true}
+                        style={{ padding: "6px" }}
+                        key={index}
+                      >
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            textDecoration: "underline"
+                          }}
+                        >
+                          {ingredient.quantity}
+                        </span>
+                        {" " + ingredient.name}
+                      </ListItem>
+                    )
+                  )}
+                </List>
+              </div>
+              <div
+                style={{ display: "block", float: "left", marginLeft: "20%" }}
               >
-                <img src="/cake.jpg" />
-              </CardMedia>
-
-              <CardTitle
-                style={{ width: "35%", float: "left", textAlign: "center" }}
-                title="Ingredients"
-              />
+                <List>
+                  {this.state.currentRecipe.howToMake.map((step, index) => (
+                    <ListItem disabled={true}>
+                      <span style={{ fontWeight: "bold" }}>{index + 1}</span>
+                      {" - " + step}
+                    </ListItem>
+                  ))}
+                </List>
+              </div>
             </Card>
           </div>
 
