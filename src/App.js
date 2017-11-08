@@ -303,9 +303,14 @@ class App extends Component {
                   )}
                 </List>
               </div>
-              <div
-                style={{ display: "block", float: "left", marginLeft: "20%" }}
-              >
+
+              <div style={{ float: "left", marginLeft: "20%" }}>
+                <CardTitle
+                  title="How To Make"
+                  style={{ textAlign: "center" }}
+                  titleStyle={{ fontSize: "30px" }}
+                />
+
                 <List>
                   {this.state.currentRecipe.howToMake.map((step, index) => (
                     <ListItem disabled={true}>
