@@ -13,6 +13,8 @@ import TextField from "material-ui/TextField";
 import SelectField from "material-ui/SelectField";
 import MenuItem from "material-ui/MenuItem";
 import RaisedButton from "material-ui/RaisedButton";
+import ContentAdd from "material-ui/svg-icons/content/add";
+import FloatingActionButton from "material-ui/FloatingActionButton";
 
 class Admin extends Component {
   constructor(props) {
@@ -207,6 +209,32 @@ class Admin extends Component {
                   ))}
                 </TableBody>
               </Table>
+
+              <div
+                style={{
+                  width: "70%",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  marginTop: "10px",
+                  marginBottom: "40px"
+                }}
+              >
+                <TextField hintText="Name" />
+                <br />
+                <TextField hintText="Quantity" />
+                <TextField hintText="Ingredient" />
+                <FloatingActionButton mini={true}>
+                  <ContentAdd />
+                </FloatingActionButton>
+                <br />
+                <TextField hintText="How To Make" />{" "}
+                <FloatingActionButton mini={true}>
+                  <ContentAdd />
+                </FloatingActionButton>
+                <br />
+                <RaisedButton label="Add" backgroundColor={"#1dc600"} />
+                <RaisedButton label="Save" backgroundColor={"#1dc600"} />
+              </div>
             </Tab>
           </Tabs>
         </div>
