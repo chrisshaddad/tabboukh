@@ -20,6 +20,11 @@ class Admin extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      addIngredientInput: "",
+      addIngredientCategory: "",
+      addIngredientError: "",
+      selectCategoryError: "",
+      allIngredients: [],
       categories: [
         {
           name: "meats",
@@ -99,6 +104,59 @@ class Admin extends Component {
       ]
     };
   }
+  componentDidMount() {
+    let allIngredientsCombined = [];
+    for (let i = 0; i < this.state.categories.length; i++) {
+      allIngredientsCombined = [
+        ...allIngredientsCombined,
+        ...this.state.categories[i].ingredients
+      ];
+    }
+    this.setState({
+      allIngredients: allIngredientsCombined
+    });
+  }
+
+  handleIngredientInput = ingredient => {
+    this.setState({
+      addIngredientInput: ingredient
+    });
+  };
+
+  handleCategorySelect = category => {
+    this.setState({
+      addIngredientCategory: category
+    });
+  };
+
+  handleAddIngredient = () => {
+    if (this.state.addIngredientInput === "") {
+      this.setState({
+        addIngredientError: "Ingredient can't be empty"
+      });
+    } else if (this.ingredientAlreadyExists(this.state.addIngredientInput)) {
+      this.setState({
+        addIngredientError: "Ingredient already exists"
+      });
+    } else {
+      this.setState({
+        addIngredientError: ""
+      });
+      if (this.state.selectCategoryError === "") {
+        this.setState({
+          selectCategoryError: "Select a category"
+        });
+      } else {
+        //handle add Ingredient
+      }
+    }
+  };
+
+  ingredientAlreadyExists = ingredient => {
+    if (this.state.allIngredients.indexOf(ingredient) > -1) return true;
+    else return false;
+  };
+
   render() {
     return (
       <MuiThemeProvider>
@@ -153,22 +211,30 @@ class Admin extends Component {
                 <TextField
                   hintText="Add You Ingredient Here"
                   style={{ width: "45%", float: "left" }}
+                  onChange={(e, ingredient) =>
+                    this.handleIngredientInput(ingredient)}
+                  value={this.state.addIngredientInput}
+                  errorText={this.state.addIngredientError}
                 />
                 <SelectField
                   style={{ width: "30%", float: "left" }}
                   hintText="Category"
-                  value={""}
+                  value={this.state.addIngredientCategory}
+                  onChange={(event, key, category) =>
+                    this.handleCategorySelect(category)}
+                  errorText={this.state.selectCategoryError}
                 >
-                  <MenuItem primaryText={"fruits"} />
-                  <MenuItem primaryText={"vegerables"} />
-                  <MenuItem primaryText={"fruits"} />
-                  <MenuItem primaryText={"fruits"} />
-                  <MenuItem primaryText={"fruits"} />
+                  <MenuItem value={"fruits"} primaryText={"fruits"} />
+                  <MenuItem value={"vegetables"} primaryText={"vegetables"} />
+                  <MenuItem value={"meats"} primaryText={"meats"} />
+                  <MenuItem value={"spices"} primaryText={"spices"} />
+                  <MenuItem value={"other"} primaryText={"other"} />
                 </SelectField>
                 <RaisedButton
                   label="Add Ingredient"
                   primary={true}
                   style={{ width: "25%" }}
+                  onClick={e => this.handleAddIngredient()}
                 />
               </div>
             </Tab>
@@ -227,7 +293,10 @@ class Admin extends Component {
                   <ContentAdd />
                 </FloatingActionButton>
                 <br />
-                <TextField hintText="How To Make" />{" "}
+                <TextField
+                  style={{ width: "80%" }}
+                  hintText="How To Make"
+                />{" "}
                 <FloatingActionButton mini={true}>
                   <ContentAdd />
                 </FloatingActionButton>
