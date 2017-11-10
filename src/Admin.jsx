@@ -21,7 +21,7 @@ class Admin extends Component {
     super(props);
     this.state = {
       addIngredientInput: "",
-      addIngredientCategory: "",
+      selectIngredientCategory: "",
       addIngredientError: "",
       selectCategoryError: "",
       allIngredients: [],
@@ -125,11 +125,11 @@ class Admin extends Component {
 
   handleCategorySelect = category => {
     this.setState({
-      addIngredientCategory: category
+      selectIngredientCategory: category
     });
   };
 
-  handleAddIngredient = () => {
+  handleAddIngredientClick = () => {
     if (this.state.addIngredientInput === "") {
       this.setState({
         addIngredientError: "Ingredient can't be empty"
@@ -142,14 +142,58 @@ class Admin extends Component {
       this.setState({
         addIngredientError: ""
       });
-      if (this.state.selectCategoryError === "") {
+      if (this.state.selectIngredientCategory === "") {
         this.setState({
           selectCategoryError: "Select a category"
         });
       } else {
-        //handle add Ingredient
+        let newIngredients = [];
+        for (let i = 0; i < this.state.categories.length; i++) {
+          newIngredients = [...newIngredients, this.state.categories[i]];
+          if (newIngredients[i].name === this.state.selectIngredientCategory) {
+            newIngredients[i].ingredients = [
+              ...newIngredients[i].ingredients,
+              this.state.addIngredientInput
+            ];
+          }
+        }
+        this.setState({
+          addIngredientInput: "",
+          selectIngredientCategory: "",
+          addIngredientError: "",
+          selectCategoryError: "",
+          categories: newIngredients,
+          allIngredients: [
+            ...this.state.allIngredients,
+            this.state.addIngredientInput
+          ]
+        });
       }
     }
+  };
+
+  handleDeleteIngredient = (categoryName, ingredient) => {
+    let newIngredients = [];
+    let ingredientArrayToDeleteFrom = [];
+
+    for (let i = 0; i < this.state.categories.length; i++) {
+      newIngredients = [...newIngredients, this.state.categories[i]];
+      if (newIngredients[i].name === categoryName) {
+        ingredientArrayToDeleteFrom = newIngredients[i].ingredients;
+        ingredientArrayToDeleteFrom.splice(
+          ingredientArrayToDeleteFrom.indexOf(ingredient),
+          1
+        );
+        newIngredients[i].ingredients = ingredientArrayToDeleteFrom;
+      }
+    }
+
+    this.setState({
+      categories: newIngredients,
+      allIngredients: this.state.allIngredients.filter(
+        ingredientInArray => ingredientInArray !== ingredient
+      )
+    });
   };
 
   ingredientAlreadyExists = ingredient => {
@@ -193,6 +237,11 @@ class Admin extends Component {
                           <RaisedButton
                             label="Delete"
                             backgroundColor={"red"}
+                            onClick={e =>
+                              this.handleDeleteIngredient(
+                                category.name,
+                                ingredient
+                              )}
                           />
                         </TableRowColumn>
                       </TableRow>
@@ -219,7 +268,7 @@ class Admin extends Component {
                 <SelectField
                   style={{ width: "30%", float: "left" }}
                   hintText="Category"
-                  value={this.state.addIngredientCategory}
+                  value={this.state.selectIngredientCategory}
                   onChange={(event, key, category) =>
                     this.handleCategorySelect(category)}
                   errorText={this.state.selectCategoryError}
@@ -234,7 +283,7 @@ class Admin extends Component {
                   label="Add Ingredient"
                   primary={true}
                   style={{ width: "25%" }}
-                  onClick={e => this.handleAddIngredient()}
+                  onClick={e => this.handleAddIngredientClick()}
                 />
               </div>
             </Tab>

@@ -286,7 +286,7 @@ class App extends Component {
                     (ingredient, index) => (
                       <ListItem
                         disabled={true}
-                        style={{ padding: "6px" }}
+                        style={{ padding: "5px", lineHeight: "70%" }}
                         key={index}
                       >
                         <span
@@ -304,7 +304,7 @@ class App extends Component {
                 </List>
               </div>
 
-              <div style={{ float: "left", marginLeft: "20%" }}>
+              <div style={{ float: "left", marginLeft: "25%" }}>
                 <CardTitle
                   title="How To Make"
                   style={{ textAlign: "center" }}
