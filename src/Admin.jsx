@@ -15,6 +15,7 @@ import MenuItem from "material-ui/MenuItem";
 import RaisedButton from "material-ui/RaisedButton";
 import ContentAdd from "material-ui/svg-icons/content/add";
 import FloatingActionButton from "material-ui/FloatingActionButton";
+import VerticalAlignTop from "material-ui/svg-icons/editor/vertical-align-top";
 
 class Admin extends Component {
   constructor(props) {
@@ -196,6 +197,18 @@ class Admin extends Component {
     });
   };
 
+  handleDeleteRecipe = recipeName => {
+    let newRecipes = [];
+    for (let i = 0; i < this.state.recipes.length; i++) {
+      if (!(this.state.recipes[i].name === recipeName)) {
+        newRecipes = [...newRecipes, this.state.recipes[i]];
+      }
+    }
+    this.setState({
+      recipes: newRecipes
+    });
+  };
+
   ingredientAlreadyExists = ingredient => {
     if (this.state.allIngredients.indexOf(ingredient) > -1) return true;
     else return false;
@@ -287,6 +300,20 @@ class Admin extends Component {
                 />
               </div>
             </Tab>
+            {/*
+              *
+              *
+              *
+              *
+              *
+              *
+              *
+              *
+              *
+              *
+              *
+              *
+              */}
             <Tab label="Recipes">
               <Table
                 style={{
@@ -318,7 +345,11 @@ class Admin extends Component {
                         />
                       </TableRowColumn>
                       <TableRowColumn>
-                        <RaisedButton label="Delete" backgroundColor={"red"} />
+                        <RaisedButton
+                          label="Delete"
+                          onClick={e => this.handleDeleteRecipe(recipe.name)}
+                          backgroundColor={"red"}
+                        />
                       </TableRowColumn>
                     </TableRow>
                   ))}
@@ -336,8 +367,18 @@ class Admin extends Component {
               >
                 <TextField hintText="Name" />
                 <br />
-                <TextField hintText="Quantity" />
-                <TextField hintText="Ingredient" />
+                <RaisedButton
+                  style={{ marginTop: "10px" }}
+                  label="Recipe Image"
+                  labelPosition="before"
+                  containerElement="label"
+                  icon={<VerticalAlignTop />}
+                >
+                  <input type="file" style={{ display: "none" }} />
+                </RaisedButton>
+                <br />
+                <TextField hintText="Quantity" style={{ float: "left" }} />
+                <SelectField hintText="ingredient" />
                 <FloatingActionButton mini={true}>
                   <ContentAdd />
                 </FloatingActionButton>
