@@ -34,41 +34,10 @@ class Admin extends Component {
       allIngredients: [],
       allRecipesNames: [],
       currentRecipe: {
-        name: "Cake",
-        image: "/cake.jpg",
-        ingredientsAndQuantities: [
-          {
-            name: "potato",
-            quantity: "1/2 cup"
-          },
-          {
-            name: "potato",
-            quantity: "1 tbsp"
-          },
-          {
-            name: "potato",
-            quantity: "2 cubes"
-          },
-          {
-            name: "potato",
-            quantity: "2"
-          },
-          {
-            name: "meat",
-            quantity: "1 gallon"
-          },
-          {
-            name: "peach",
-            quantity: "1 bucket"
-          }
-        ],
-        howToMake: [
-          "Add 1 bucket of creme and stir it up real good",
-          "Praise Satan",
-          "Crack eggs",
-          "Mix everything up and put inside oven",
-          "Eat"
-        ],
+        name: "",
+        image: "",
+        ingredientsAndQuantities: [],
+        howToMake: [],
         ingredients: []
       },
       categories: [
@@ -324,6 +293,20 @@ class Admin extends Component {
     });
   };
 
+  handleEdit = (recipe, index) => {
+    this.setState({
+      editMode: true,
+      recipeBeingEdited: index,
+      currentRecipe: {
+        name: recipe.name,
+        image: recipe.image,
+        ingredientsAndQuantities: recipe.ingredientsAndQuantities,
+        howToMake: recipe.howToMake,
+        ingredients: recipe.ingredients
+      }
+    });
+  };
+
   handleAddRecipe = () => {
     if (
       this.state.allRecipesNames.indexOf(this.state.currentRecipe.name) > -1
@@ -359,10 +342,17 @@ class Admin extends Component {
               this.state.currentRecipe.ingredientsAndQuantities[i].name
             ];
           }
+
           let recipeToAdd = this.state.currentRecipe;
           recipeToAdd.ingredients = recipeIngredients;
+          let newAllRecipes = this.state.recipes;
+
+          if (this.state.editMode) {
+            newAllRecipes.splice(this.state.recipeBeingEdited, 1);
+          }
+
           this.setState({
-            recipes: [...this.state.recipes, recipeToAdd],
+            recipes: [...newAllRecipes, recipeToAdd],
             allRecipesNames: [...this.state.allRecipesNames, recipeToAdd.name],
             currentRecipe: {
               name: "",
@@ -370,7 +360,9 @@ class Admin extends Component {
               ingredientsAndQuantities: [],
               howToMake: [],
               ingredients: []
-            }
+            },
+            editMode: false,
+            recipeBeingEdited: ""
           });
         }
       }
@@ -463,20 +455,7 @@ class Admin extends Component {
                 />
               </div>
             </Tab>
-            {/*
-              *
-              *
-              *
-              *
-              *
-              *
-              *
-              *
-              *
-              *
-              *
-              *
-              */}
+
             <Tab label="Recipes">
               <Table
                 style={{
@@ -496,7 +475,7 @@ class Admin extends Component {
                 </TableHeader>
 
                 <TableBody displayRowCheckbox={false}>
-                  {this.state.recipes.map(recipe => (
+                  {this.state.recipes.map((recipe, index) => (
                     <TableRow>
                       <TableRowColumn style={{ paddingLeft: "72px" }}>
                         {recipe.name}
@@ -505,6 +484,7 @@ class Admin extends Component {
                         <RaisedButton
                           label="Edit"
                           backgroundColor={"#f29c24"}
+                          onClick={e => this.handleEdit(recipe, index)}
                         />
                       </TableRowColumn>
                       <TableRowColumn>

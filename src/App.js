@@ -55,61 +55,7 @@ class App extends Component {
       ],
       availableIngredients: [],
       allIngredients: [],
-      recipes: [
-        {
-          image: "/burger.jpg",
-          name: "Burger",
-          ingredients: ["potato", "chocolate", "lemon"]
-        },
-        {
-          image: "/cake.jpg",
-          name: "Cake",
-          ingredients: ["chocolate", "lemon"]
-        },
-        {
-          image: "/burger.jpg",
-          name: "Burger",
-          ingredients: ["meat", "chocolate", "lemon"]
-        },
-        {
-          image: "/cake.jpg",
-          name: "Cake",
-          ingredients: ["potato", "chocolate", "salt"]
-        },
-        {
-          image: "/burger.jpg",
-          name: "Burger",
-          ingredients: ["potato", "chicken", "lemon"]
-        },
-        {
-          image: "/cake.jpg",
-          name: "Cake",
-          ingredients: [
-            "potato",
-            "rabbit",
-            "lemon",
-            "salt",
-            "tomatoe",
-            "chicken",
-            "garlic"
-          ]
-        },
-        {
-          image: "/burger.jpg",
-          name: "Burger",
-          ingredients: ["potato", "tomatoe", "chicken", "garlic"]
-        },
-        {
-          image: "/cake.jpg",
-          name: "Cake",
-          ingredients: ["potato", "tomatoe", "chicken", "garlic"]
-        },
-        {
-          image: "/burger.jpg",
-          name: "Burger",
-          ingredients: ["potato", "garlic"]
-        }
-      ],
+      recipes: [],
       recipeCols: 3,
       currentRecipe: {
         name: "Cake",
