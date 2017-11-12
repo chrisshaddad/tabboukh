@@ -26,7 +26,13 @@ class Admin extends Component {
       selectIngredientCategory: "",
       addIngredientError: "",
       selectCategoryError: "",
+      recipeNameError: "",
+      ingredientQuantityError: "",
+      howToMakeError: "",
+      editMode: false,
+      recipeBeingEdited: "",
       allIngredients: [],
+      allRecipesNames: [],
       currentRecipe: {
         name: "Cake",
         image: "/cake.jpg",
@@ -131,14 +137,22 @@ class Admin extends Component {
   }
   componentDidMount() {
     let allIngredientsCombined = [];
+    let allRecipesCombined = [];
+
     for (let i = 0; i < this.state.categories.length; i++) {
       allIngredientsCombined = [
         ...allIngredientsCombined,
         ...this.state.categories[i].ingredients
       ];
     }
+
+    for (let i = 0; i < this.state.recipes.length; i++) {
+      allRecipesCombined = [...allRecipesCombined, this.state.recipes[i].name];
+    }
+
     this.setState({
-      allIngredients: allIngredientsCombined
+      allIngredients: allIngredientsCombined,
+      allRecipesNames: allRecipesCombined
     });
   }
 
@@ -278,14 +292,90 @@ class Admin extends Component {
     return false;
   };
 
-  handleRecipeInput(value) {
-    let newCurrentRecipe;
-    newCurrentRecipe = this.state.currentRecipe;
+  handleRecipeNameInput(value) {
+    let newCurrentRecipe = this.state.currentRecipe;
     newCurrentRecipe.name = value;
     this.setState({
       currentRecipe: newCurrentRecipe
     });
   }
+
+  handleQuantityInput = (value, index) => {
+    let newCurrentRecipe = this.state.currentRecipe;
+    newCurrentRecipe.ingredientsAndQuantities[index].quantity = value;
+    this.setState({
+      currentRecipe: newCurrentRecipe
+    });
+  };
+
+  handleIngredientSelect = (value, index) => {
+    let newCurrentRecipe = this.state.currentRecipe;
+    newCurrentRecipe.ingredientsAndQuantities[index].name = value;
+    this.setState({
+      currentRecipe: newCurrentRecipe
+    });
+  };
+
+  handleStepInput = (value, index) => {
+    let newCurrentRecipe = this.state.currentRecipe;
+    newCurrentRecipe.howToMake[index] = value;
+    this.setState({
+      currentRecipe: newCurrentRecipe
+    });
+  };
+
+  handleAddRecipe = () => {
+    if (
+      this.state.allRecipesNames.indexOf(this.state.currentRecipe.name) > -1
+    ) {
+      this.setState({ recipeNameError: "Recipe name already taken" });
+    } else {
+      this.setState({ recipeNameError: "" });
+      if (this.state.currentRecipe.ingredientsAndQuantities.length === 0) {
+        this.setState({
+          ingredientQuantityError: "Need to add at least one ingredient"
+        });
+      } else {
+        this.setState({
+          ingredientQuantityError: ""
+        });
+        if (this.state.currentRecipe.howToMake.length === 0) {
+          this.setState({
+            howToMakeError: "Need to have at least one step"
+          });
+        } else {
+          this.setState({
+            howToMakeError: ""
+          });
+
+          let recipeIngredients = [];
+          for (
+            let i = 0;
+            i < this.state.currentRecipe.ingredientsAndQuantities.length;
+            i++
+          ) {
+            recipeIngredients = [
+              ...recipeIngredients,
+              this.state.currentRecipe.ingredientsAndQuantities[i].name
+            ];
+          }
+          let recipeToAdd = this.state.currentRecipe;
+          recipeToAdd.ingredients = recipeIngredients;
+          this.setState({
+            recipes: [...this.state.recipes, recipeToAdd],
+            allRecipesNames: [...this.state.allRecipesNames, recipeToAdd.name],
+            currentRecipe: {
+              name: "",
+              image: "",
+              ingredientsAndQuantities: [],
+              howToMake: [],
+              ingredients: []
+            }
+          });
+        }
+      }
+    }
+  };
 
   render() {
     return (
@@ -441,7 +531,8 @@ class Admin extends Component {
                 <TextField
                   hintText="Name"
                   value={this.state.currentRecipe.name}
-                  onChange={(event, value) => this.handleRecipeInput(value)}
+                  onChange={(event, value) => this.handleRecipeNameInput(value)}
+                  errorText={this.state.recipeNameError}
                 />
                 <br />
                 <RaisedButton
@@ -461,10 +552,14 @@ class Admin extends Component {
                         hintText="Quantity"
                         style={{ float: "left" }}
                         value={ingredient.quantity}
+                        onChange={(event, value) =>
+                          this.handleQuantityInput(value, index)}
                       />
                       <SelectField
                         hintText="ingredient"
                         value={ingredient.name}
+                        onChange={(event, key, ingredient) =>
+                          this.handleIngredientSelect(ingredient, index)}
                       >
                         {this.state.allIngredients.map(ingredient => (
                           <MenuItem
@@ -489,12 +584,15 @@ class Admin extends Component {
                   hintText="Quantity"
                   style={{ float: "left" }}
                   disabled={true}
+                  errorText={this.state.ingredientQuantityError}
                 />
-                <SelectField hintText="ingredient" disabled={true}>
-                  {this.state.allIngredients.map(ingredient => (
-                    <MenuItem value={ingredient} primaryText={ingredient} />
-                  ))}
-                </SelectField>
+                <SelectField
+                  hintText="ingredient"
+                  disabled={true}
+                  errorText={
+                    this.state.ingredientQuantityError === "" ? "" : " "
+                  }
+                />
                 <FloatingActionButton
                   mini={true}
                   onClick={e => this.handleAddIngredientToRecipe()}
@@ -508,6 +606,8 @@ class Admin extends Component {
                       style={{ width: "80%" }}
                       hintText="How To Make"
                       value={step}
+                      onChange={(event, value) =>
+                        this.handleStepInput(value, index)}
                     />
                     <FloatingActionButton
                       mini={true}
@@ -523,6 +623,7 @@ class Admin extends Component {
                   style={{ width: "80%" }}
                   hintText="How To Make"
                   disabled={true}
+                  errorText={this.state.howToMakeError}
                 />{" "}
                 <FloatingActionButton
                   mini={true}
@@ -531,8 +632,11 @@ class Admin extends Component {
                   <ContentAdd />
                 </FloatingActionButton>
                 <br />
-                <RaisedButton label="Add" backgroundColor={"#1dc600"} />
-                <RaisedButton label="Save" backgroundColor={"#1dc600"} />
+                <RaisedButton
+                  label={this.state.editMode ? "Save" : "Add"}
+                  backgroundColor={"#1dc600"}
+                  onClick={e => this.handleAddRecipe()}
+                />
               </div>
             </Tab>
           </Tabs>
