@@ -112,7 +112,6 @@ class App extends Component {
       ],
       recipeCols: 3,
       currentRecipe: {
-        id: "",
         name: "Cake",
         image: "/cake.jpg",
         ingredientsAndQuantities: [

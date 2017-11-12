@@ -14,6 +14,7 @@ import SelectField from "material-ui/SelectField";
 import MenuItem from "material-ui/MenuItem";
 import RaisedButton from "material-ui/RaisedButton";
 import ContentAdd from "material-ui/svg-icons/content/add";
+import ContentRemove from "material-ui/svg-icons/content/remove";
 import FloatingActionButton from "material-ui/FloatingActionButton";
 import VerticalAlignTop from "material-ui/svg-icons/editor/vertical-align-top";
 
@@ -26,6 +27,44 @@ class Admin extends Component {
       addIngredientError: "",
       selectCategoryError: "",
       allIngredients: [],
+      currentRecipe: {
+        name: "Cake",
+        image: "/cake.jpg",
+        ingredientsAndQuantities: [
+          {
+            name: "potato",
+            quantity: "1/2 cup"
+          },
+          {
+            name: "potato",
+            quantity: "1 tbsp"
+          },
+          {
+            name: "potato",
+            quantity: "2 cubes"
+          },
+          {
+            name: "potato",
+            quantity: "2"
+          },
+          {
+            name: "meat",
+            quantity: "1 gallon"
+          },
+          {
+            name: "peach",
+            quantity: "1 bucket"
+          }
+        ],
+        howToMake: [
+          "Add 1 bucket of creme and stir it up real good",
+          "Praise Satan",
+          "Crack eggs",
+          "Mix everything up and put inside oven",
+          "Eat"
+        ],
+        ingredients: []
+      },
       categories: [
         {
           name: "meats",
@@ -50,57 +89,42 @@ class Admin extends Component {
       ],
       recipes: [
         {
-          image: "/burger.jpg",
-          name: "Burger",
-          ingredients: ["potato", "chocolate", "lemon"]
-        },
-        {
-          image: "/cake.jpg",
           name: "Cake",
-          ingredients: ["chocolate", "lemon"]
-        },
-        {
-          image: "/burger.jpg",
-          name: "Burger",
-          ingredients: ["meat", "chocolate", "lemon"]
-        },
-        {
           image: "/cake.jpg",
-          name: "Cake",
-          ingredients: ["potato", "chocolate", "salt"]
-        },
-        {
-          image: "/burger.jpg",
-          name: "Burger",
-          ingredients: ["potato", "chicken", "lemon"]
-        },
-        {
-          image: "/cake.jpg",
-          name: "Cake",
-          ingredients: [
-            "potato",
-            "rabbit",
-            "lemon",
-            "salt",
-            "tomatoe",
-            "chicken",
-            "garlic"
-          ]
-        },
-        {
-          image: "/burger.jpg",
-          name: "Burger",
-          ingredients: ["potato", "tomatoe", "chicken", "garlic"]
-        },
-        {
-          image: "/cake.jpg",
-          name: "Cake",
-          ingredients: ["potato", "tomatoe", "chicken", "garlic"]
-        },
-        {
-          image: "/burger.jpg",
-          name: "Burger",
-          ingredients: ["potato", "garlic"]
+          ingredientsAndQuantities: [
+            {
+              name: "potato",
+              quantity: "1/2 cup"
+            },
+            {
+              name: "potato",
+              quantity: "1 tbsp"
+            },
+            {
+              name: "potato",
+              quantity: "2 cubes"
+            },
+            {
+              name: "potato",
+              quantity: "2"
+            },
+            {
+              name: "meat",
+              quantity: "1 gallon"
+            },
+            {
+              name: "peach",
+              quantity: "1 bucket"
+            }
+          ],
+          howToMake: [
+            "Add 1 bucket of creme and stir it up real good",
+            "Praise Satan",
+            "Crack eggs",
+            "Mix everything up and put inside oven",
+            "Eat"
+          ],
+          ingredients: []
         }
       ]
     };
@@ -209,10 +233,59 @@ class Admin extends Component {
     });
   };
 
+  handleAddIngredientToRecipe = () => {
+    let newRecipe = this.state.currentRecipe;
+    let newIngredient = { name: "", quantity: "" };
+    newRecipe.ingredientsAndQuantities = [
+      ...newRecipe.ingredientsAndQuantities,
+      newIngredient
+    ];
+    this.setState({ currentRecipe: newRecipe });
+  };
+
+  handleAddStepToRecipe = () => {
+    let newRecipe = this.state.currentRecipe;
+    let newStep = "";
+    newRecipe.howToMake = [...newRecipe.howToMake, newStep];
+    this.setState({ currentRecipe: newRecipe });
+  };
+
+  handleRemoveIngredientFromRecipe = index => {
+    let newRecipe = this.state.currentRecipe;
+    newRecipe.ingredientsAndQuantities.splice(index, 1);
+    this.setState({
+      currentRecipe: newRecipe
+    });
+  };
+
+  handleRemoveStepFromRecipe = index => {
+    let newRecipe = this.state.currentRecipe;
+    newRecipe.howToMake.splice(index, 1);
+    this.setState({
+      currentRecipe: newRecipe
+    });
+  };
+
   ingredientAlreadyExists = ingredient => {
     if (this.state.allIngredients.indexOf(ingredient) > -1) return true;
     else return false;
   };
+
+  ingredientAlreadyExists = recipeName => {
+    for (let i = 0; i < this.state.recipes.length; i++) {
+      if (this.state.recipes[i].name === recipeName) return true;
+    }
+    return false;
+  };
+
+  handleRecipeInput(value) {
+    let newCurrentRecipe;
+    newCurrentRecipe = this.state.currentRecipe;
+    newCurrentRecipe.name = value;
+    this.setState({
+      currentRecipe: newCurrentRecipe
+    });
+  }
 
   render() {
     return (
@@ -365,7 +438,11 @@ class Admin extends Component {
                   marginBottom: "40px"
                 }}
               >
-                <TextField hintText="Name" />
+                <TextField
+                  hintText="Name"
+                  value={this.state.currentRecipe.name}
+                  onChange={(event, value) => this.handleRecipeInput(value)}
+                />
                 <br />
                 <RaisedButton
                   style={{ marginTop: "10px" }}
@@ -377,17 +454,80 @@ class Admin extends Component {
                   <input type="file" style={{ display: "none" }} />
                 </RaisedButton>
                 <br />
-                <TextField hintText="Quantity" style={{ float: "left" }} />
-                <SelectField hintText="ingredient" />
-                <FloatingActionButton mini={true}>
+                {this.state.currentRecipe.ingredientsAndQuantities.map(
+                  (ingredient, index) => (
+                    <div>
+                      <TextField
+                        hintText="Quantity"
+                        style={{ float: "left" }}
+                        value={ingredient.quantity}
+                      />
+                      <SelectField
+                        hintText="ingredient"
+                        value={ingredient.name}
+                      >
+                        {this.state.allIngredients.map(ingredient => (
+                          <MenuItem
+                            value={ingredient}
+                            primaryText={ingredient}
+                          />
+                        ))}
+                      </SelectField>
+                      <FloatingActionButton
+                        mini={true}
+                        backgroundColor={"red"}
+                        onClick={e =>
+                          this.handleRemoveIngredientFromRecipe(index)}
+                      >
+                        <ContentRemove />
+                      </FloatingActionButton>
+                      <br />
+                    </div>
+                  )
+                )}
+                <TextField
+                  hintText="Quantity"
+                  style={{ float: "left" }}
+                  disabled={true}
+                />
+                <SelectField hintText="ingredient" disabled={true}>
+                  {this.state.allIngredients.map(ingredient => (
+                    <MenuItem value={ingredient} primaryText={ingredient} />
+                  ))}
+                </SelectField>
+                <FloatingActionButton
+                  mini={true}
+                  onClick={e => this.handleAddIngredientToRecipe()}
+                >
                   <ContentAdd />
                 </FloatingActionButton>
                 <br />
+                {this.state.currentRecipe.howToMake.map((step, index) => (
+                  <div>
+                    <TextField
+                      style={{ width: "80%" }}
+                      hintText="How To Make"
+                      value={step}
+                    />
+                    <FloatingActionButton
+                      mini={true}
+                      backgroundColor={"red"}
+                      onClick={e => this.handleRemoveStepFromRecipe(index)}
+                    >
+                      <ContentRemove />
+                    </FloatingActionButton>
+                    <br />
+                  </div>
+                ))}
                 <TextField
                   style={{ width: "80%" }}
                   hintText="How To Make"
+                  disabled={true}
                 />{" "}
-                <FloatingActionButton mini={true}>
+                <FloatingActionButton
+                  mini={true}
+                  onClick={e => this.handleAddStepToRecipe()}
+                >
                   <ContentAdd />
                 </FloatingActionButton>
                 <br />
