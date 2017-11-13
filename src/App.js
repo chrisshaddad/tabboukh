@@ -365,7 +365,7 @@ class App extends Component {
         textAlign: "center"
       }}
     >
-      <h1>Select more Ingredients to get more recipes!</h1>
+      <h1>Select more Ingredients to get recipes!</h1>
     </div>)
   }
 
