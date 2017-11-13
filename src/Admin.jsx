@@ -35,7 +35,7 @@ class Admin extends Component {
       allRecipesNames: [],
       currentRecipe: {
         name: "",
-        image: "",
+        image: "http://lorempixel.com/640/480/food/",
         ingredientsAndQuantities: [],
         howToMake: [],
         ingredients: []
@@ -54,8 +54,28 @@ class Admin extends Component {
           ingredients: ["lettuce", "cucumber", "cabbage", "potato", "lemon"]
         },
         {
+          name: "dairy",
+          ingredients: []
+        },
+        {
+          name: "fish",
+          ingredients: []
+        },
+        {
+          name: "herbs",
+          ingredients: []
+        },
+        {
           name: "spices",
           ingredients: ["salt", "pepper"]
+        },
+        {
+          name: "beverages",
+          ingredients: []
+        },
+        {
+          name: "condiments",
+          ingredients: []
         },
         {
           name: "other",
@@ -356,7 +376,7 @@ class Admin extends Component {
             allRecipesNames: [...this.state.allRecipesNames, recipeToAdd.name],
             currentRecipe: {
               name: "",
-              image: "",
+              image: "http://lorempixel.com/640/480/food/",
               ingredientsAndQuantities: [],
               howToMake: [],
               ingredients: []
