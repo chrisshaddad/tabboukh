@@ -15,7 +15,7 @@ import RaisedButton from "material-ui/RaisedButton";
 const styles = {
   chip: {
     margin: 4,
-    float:'left'
+    float: "left"
   },
   gridList: {
     width: "70%",
@@ -28,17 +28,17 @@ const styles = {
     marginRight: "auto",
     boxShadow: "none"
   },
-  menuItem:{
-    float:'left',
-    display:'flex',
-    width:'fit-content'
-  }, 
-  menuItemWrapper:{
-    display:'flex',
-    flexWrap:'wrap',
-    width:'100%',
-    boxSizing:'border-box',
-    padding:'10px'
+  menuItem: {
+    float: "left",
+    display: "flex",
+    width: "fit-content"
+  },
+  menuItemWrapper: {
+    display: "flex",
+    flexWrap: "wrap",
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "10px"
   }
 };
 
@@ -51,15 +51,15 @@ class App extends Component {
       ingredientsCategories: [
         {
           name: "meats",
-          ingredients: ["meat", "chicken"]
+          ingredients: []
         },
         {
           name: "fruits",
-          ingredients: ["apple", "banana", "peach"]
+          ingredients: []
         },
         {
           name: "vegetables",
-          ingredients: ["lettuce", "cucumber", "cabbage", "potato", "lemon"]
+          ingredients: []
         },
         {
           name: "dairy",
@@ -75,7 +75,7 @@ class App extends Component {
         },
         {
           name: "spices",
-          ingredients: ["salt", "pepper"]
+          ingredients: []
         },
         {
           name: "beverages",
@@ -87,134 +87,14 @@ class App extends Component {
         },
         {
           name: "other",
-          ingredients: ["chocolate"]
+          ingredients: []
         }
       ],
       availableIngredients: [
-        "potato",
-        "honey",
-        "sugar",
-        "eggs",
-        "milk",
-        "creme"
+
       ],
       allIngredients: [],
-      recipes: [
-        {
-          name: "Cake1",
-          image: "/cake.jpg",
-          ingredientsAndQuantities: [
-            {
-              name: "potato",
-              quantity: "1/2 cup"
-            },
-            {
-              name: "honey",
-              quantity: "1 tbsp"
-            },
-            {
-              name: "sugar",
-              quantity: "2 cubes"
-            },
-            {
-              name: "eggs",
-              quantity: "2"
-            },
-            {
-              name: "milk",
-              quantity: "1 gallon"
-            },
-            {
-              name: "creme",
-              quantity: "1 bucket"
-            }
-          ],
-          howToMake: [
-            "Add 1 bucket of creme and stir it up real good",
-            "Praise Satan",
-            "Crack eggs",
-            "Mix everything up and put inside oven",
-            "Eat"
-          ],
-          ingredients: ["potato", "honey", "sugar", "eggs", "milk", "creme"]
-        },
-        {
-          name: "Cake2",
-          image: "/cake.jpg",
-          ingredientsAndQuantities: [
-            {
-              name: "potato",
-              quantity: "1/2 cup"
-            },
-            {
-              name: "honey",
-              quantity: "1 tbsp"
-            },
-            {
-              name: "sugar",
-              quantity: "2 cubes"
-            },
-            {
-              name: "eggs",
-              quantity: "2"
-            },
-            {
-              name: "milk",
-              quantity: "1 gallon"
-            },
-            {
-              name: "creme",
-              quantity: "1 bucket"
-            }
-          ],
-          howToMake: [
-            "Add 1 bucket of creme and stir it up real good",
-            "Praise Satan",
-            "Crack eggs",
-            "Mix everything up and put inside oven",
-            "Eat"
-          ],
-          ingredients: ["potato", "honey", "sugar", "eggs", "milk", "creme"]
-        },
-        {
-          name: "Cake3",
-          image: "/cake.jpg",
-          ingredientsAndQuantities: [
-            {
-              name: "potato",
-              quantity: "1/2 cup"
-            },
-            {
-              name: "honey",
-              quantity: "1 tbsp"
-            },
-            {
-              name: "sugar",
-              quantity: "2 cubes"
-            },
-            {
-              name: "eggs",
-              quantity: "2"
-            },
-            {
-              name: "milk",
-              quantity: "1 gallon"
-            },
-            {
-              name: "creme",
-              quantity: "1 bucket"
-            }
-          ],
-          howToMake: [
-            "Add 1 bucket of creme and stir it up real good",
-            "Praise Satan",
-            "Crack eggs",
-            "Mix everything up and put inside oven",
-            "Eat"
-          ],
-          ingredients: ["potato", "honey", "sugar", "eggs", "milk", "creme"]
-        }
-      ],
+      recipes: [],
       recipeCols: 3,
       currentRecipe: {
         name: "",
@@ -222,22 +102,37 @@ class App extends Component {
         ingredientsAndQuantities: [],
         howToMake: [],
         ingredients: []
-      }
+      },searchText:""
     };
   }
 
-  componentDidMount() {
+  combineData=(ingredients,recipes)=>{
     let allIngredientsCombined = [];
-    for (let i = 0; i < this.state.ingredientsCategories.length; i++) {
+    for (let i = 0; i < ingredients.length; i++) {
       allIngredientsCombined = [
         ...allIngredientsCombined,
-        ...this.state.ingredientsCategories[i].ingredients
+        ...ingredients[i].ingredients
       ];
     }
     this.setState({
+      ingredientsCategories:ingredients,
+      recipes:recipes,
       allIngredients: allIngredientsCombined
     });
   }
+
+  componentDidMount() {
+    this.getData();
+  }
+
+  getData = () => {
+    fetch("http://localhost:3001")
+      .then(res => res.json())
+      .then( ({ingredients,recipes}) =>
+        this.combineData(ingredients,recipes)
+      )
+      .catch(err=>console.log(err))
+  };
 
   handleUpdateInput = ingredient => {
     if (this.isIngredientAvailable(ingredient)) {
@@ -248,7 +143,8 @@ class App extends Component {
       );
       this.setState({
         availableIngredients: [...this.state.availableIngredients, ingredient],
-        allIngredients: newAllIngredients
+        allIngredients: newAllIngredients,
+        searchText:""
       });
     }
   };
@@ -330,7 +226,7 @@ class App extends Component {
     return true;
   }
 
-  renderRecipeList(recipesAvailable){
+  renderRecipeList(recipesAvailable) {
     const children = recipesAvailable.map((recipe, index) => {
       return (
         <GridTile
@@ -344,49 +240,55 @@ class App extends Component {
     });
     return (
       <GridList
-      style={styles.gridList}
-      cellHeight={180}
-      cols={this.state.recipeCols}
-      padding={15}
-      >  
-      {children}
+        style={styles.gridList}
+        cellHeight={180}
+        cols={this.state.recipeCols}
+        padding={15}
+      >
+        {children}
       </GridList>
-    )
+    );
   }
 
-  renderNoIngredientsSelected(){
-    return (<div
-      style={{
-        width: "70%",
-        height: "100px",
-        marginLeft: "auto",
-        marginRight: "auto",
-        marginTop: "190px",
-        textAlign: "center"
-      }}
-    >
-      <h1>Select more Ingredients to get recipes!</h1>
-    </div>)
+  renderNoIngredientsSelected() {
+    return (
+      <div
+        style={{
+          width: "70%",
+          height: "100px",
+          marginLeft: "auto",
+          marginRight: "auto",
+          marginTop: "190px",
+          textAlign: "center"
+        }}
+      >
+        <h1>Select more Ingredients to get recipes!</h1>
+      </div>
+    );
   }
 
-  renderBackButton(){
-    return (<FloatingActionButton
-      onClick={e => this.handleUndo()}
-      style={{
-        marginLeft: "20px",
-        marginTop: "4px",
-        position: "absolute"
-      }}
-    >
-      <ContentUndo />
-    </FloatingActionButton>)
+  renderBackButton() {
+    return (
+      <FloatingActionButton
+        onClick={e => this.handleUndo()}
+        style={{
+          marginLeft: "20px",
+          marginTop: "4px",
+          position: "absolute"
+        }}
+      >
+        <ContentUndo />
+      </FloatingActionButton>
+    );
   }
 
   render() {
     const paddingLeft = this.state.openDrawer ? 256 : 0;
-    const recipesAvailable = this.state.recipes.filter(this.recipeHasAllIngredients)
-    const hasRecipesAvailable = !!recipesAvailable.length
-    const recipeIsSelected = !!this.state.currentRecipe.howToMake.length
+    const recipesAvailable = this.state.recipes.filter(
+      this.recipeHasAllIngredients
+    );
+    const hasRecipesAvailable = !!recipesAvailable.length;
+    const recipeIsSelected = !!this.state.currentRecipe.howToMake.length;
     return (
       <MuiThemeProvider>
         <div className="App">
@@ -401,17 +303,12 @@ class App extends Component {
               iconClassNameRight="muidocs-icon-navigation-expand-more"
               onClick={this.handleToggle}
             />
-            { recipeIsSelected 
-            ? this.renderBackButton()
-            : null
-            }
-            { recipeIsSelected 
-            ? null
-            : ( hasRecipesAvailable
-              ? this.renderRecipeList(recipesAvailable)
-              : this.renderNoIngredientsSelected()
-              ) 
-            }
+            {recipeIsSelected ? this.renderBackButton() : null}
+            {recipeIsSelected
+              ? null
+              : hasRecipesAvailable
+                ? this.renderRecipeList(recipesAvailable)
+                : this.renderNoIngredientsSelected()}
             {this.state.currentRecipe.howToMake.length > 0 ? (
               <Card style={styles.card}>
                 <div>
@@ -487,8 +384,9 @@ class App extends Component {
                   dataSource={this.state.allIngredients}
                   filter={AutoComplete.caseInsensitiveFilter}
                   maxSearchResults={8}
-                  onNewRequest={this.handleUpdateInput}
+                  onNewRequest={(ingredient,index)=>this.handleUpdateInput(ingredient)}
                   fullWidth={true}
+                  searchText={this.state.searchText}
                   //style={{width:'200px'}}
                 />
                 {this.state.availableIngredients.length > 0 ? (
@@ -501,32 +399,39 @@ class App extends Component {
                   />
                 ) : null}
                 <div style={styles.menuItemWrapper}>
-                {this.state.availableIngredients.map((ingredient, index) => (
-                  <Chip
-                    key={index}
-                    style={styles.chip}
-                    onRequestDelete={() => this.handleDeleteIngredient(index)}
-                  >
-                    {ingredient}
-                  </Chip>
-                ))}
+                  {this.state.availableIngredients.map((ingredient, index) => (
+                    <Chip
+                      key={index}
+                      style={styles.chip}
+                      onRequestDelete={() => this.handleDeleteIngredient(index)}
+                    >
+                      {ingredient}
+                    </Chip>
+                  ))}
                 </div>
                 {this.state.ingredientsCategories.map((category, index) => {
                   const nestedIngredients = category.ingredients.map(
                     (ingredient, index) => {
-                      const checkbox = <Checkbox
-                        checked={
-                          this.state.availableIngredients.indexOf(
-                            ingredient
-                          ) > -1
-                            ? true
-                            : false
-                        }
-                        style={{float:'left',display:'block',width:'auto',marginLeft:'10px'}}
-                        label={ingredient}
-                        key={index}
-                        onCheck={evt => this.handleCheck(ingredient)}
-                      />
+                      const checkbox = (
+                        <Checkbox
+                          checked={
+                            this.state.availableIngredients.indexOf(
+                              ingredient
+                            ) > -1
+                              ? true
+                              : false
+                          }
+                          style={{
+                            float: "left",
+                            display: "block",
+                            width: "auto",
+                            marginLeft: "10px"
+                          }}
+                          label={ingredient}
+                          key={index}
+                          onCheck={evt => this.handleCheck(ingredient)}
+                        />
+                      );
                       return checkbox;
                     }
                   );
@@ -535,7 +440,7 @@ class App extends Component {
                       primaryText={category.name}
                       key={index}
                       nestedItems={nestedIngredients}
-                      style={{clear:'both'}}
+                      style={{ clear: "both" }}
                     />
                   );
                 })}

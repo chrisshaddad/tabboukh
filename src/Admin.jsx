@@ -43,15 +43,15 @@ class Admin extends Component {
       categories: [
         {
           name: "meats",
-          ingredients: ["meat", "chicken"]
+          ingredients: []
         },
         {
           name: "fruits",
-          ingredients: ["apple", "banana", "peach"]
+          ingredients: []
         },
         {
           name: "vegetables",
-          ingredients: ["lettuce", "cucumber", "cabbage", "potato", "lemon"]
+          ingredients: []
         },
         {
           name: "dairy",
@@ -67,7 +67,7 @@ class Admin extends Component {
         },
         {
           name: "spices",
-          ingredients: ["salt", "pepper"]
+          ingredients: []
         },
         {
           name: "beverages",
@@ -79,71 +79,66 @@ class Admin extends Component {
         },
         {
           name: "other",
-          ingredients: ["chocolate"]
-        }
-      ],
-      recipes: [
-        {
-          name: "Cake",
-          image: "/cake.jpg",
-          ingredientsAndQuantities: [
-            {
-              name: "potato",
-              quantity: "1/2 cup"
-            },
-            {
-              name: "potato",
-              quantity: "1 tbsp"
-            },
-            {
-              name: "potato",
-              quantity: "2 cubes"
-            },
-            {
-              name: "potato",
-              quantity: "2"
-            },
-            {
-              name: "meat",
-              quantity: "1 gallon"
-            },
-            {
-              name: "peach",
-              quantity: "1 bucket"
-            }
-          ],
-          howToMake: [
-            "Add 1 bucket of creme and stir it up real good",
-            "Praise Satan",
-            "Crack eggs",
-            "Mix everything up and put inside oven",
-            "Eat"
-          ],
           ingredients: []
         }
-      ]
+      ],
+      recipes: []
     };
   }
-  componentDidMount() {
+
+  combineData(categories,recipes){
+
     let allIngredientsCombined = [];
     let allRecipesCombined = [];
 
-    for (let i = 0; i < this.state.categories.length; i++) {
+    for (let i = 0; i < categories.length; i++) {
       allIngredientsCombined = [
         ...allIngredientsCombined,
-        ...this.state.categories[i].ingredients
+        ...categories[i].ingredients
       ];
     }
 
     for (let i = 0; i < this.state.recipes.length; i++) {
-      allRecipesCombined = [...allRecipesCombined, this.state.recipes[i].name];
+      allRecipesCombined = [...allRecipesCombined, recipes[i].name];
     }
 
     this.setState({
+      categories,
+      recipes,
       allIngredients: allIngredientsCombined,
       allRecipesNames: allRecipesCombined
     });
   }
+
+  componentDidMount() {
+
+    this.getData();
+
+  }
+
+  getData = () => {
+    fetch("http://localhost:3001")
+      .then(res => res.json())
+      .then( ({ingredients,recipes}) =>
+        this.combineData(ingredients,recipes)
+      )
+      .catch(err=>console.log(err))
+  };
+
+  saveData = () => {
+    const data = {
+      ingredients: this.state.categories,
+      recipes: this.state.recipes
+    };
+    fetch("http://localhost:3001/update", {
+      method: "post",
+      body: JSON.stringify(data),
+      headers: {
+        'Accept': "application/json",
+        "Content-Type": "application/json"
+      }
+    });
+  };
 
   handleIngredientInput = ingredient => {
     this.setState({
@@ -175,16 +170,25 @@ class Admin extends Component {
           selectCategoryError: "Select a category"
         });
       } else {
-        let newIngredients = [];
-        for (let i = 0; i < this.state.categories.length; i++) {
-          newIngredients = [...newIngredients, this.state.categories[i]];
+        /*
+        
+        const newIngredients = [ ...this.state.categories ];
+
+        for (let i = 0; i < newIngredients.length; i++) {
           if (newIngredients[i].name === this.state.selectIngredientCategory) {
-            newIngredients[i].ingredients = [
-              ...newIngredients[i].ingredients,
-              this.state.addIngredientInput
-            ];
+            newIngredients[i] = { ...newIngredient[i], ingredients:[...newIngredients[i].ingredients,this.state.addIngredientInput] }
+            break;
           }
         }
+        */
+        const newIngredients = this.state.categories.map(
+          (category) => ( category.name === this.state.selectIngredientCategory
+          ? { ...category,
+              ingredients:[...category.ingredients,this.state.addIngredientInput]
+            }
+          : category
+          )
+        )
         this.setState({
           addIngredientInput: "",
           selectIngredientCategory: "",
@@ -195,7 +199,7 @@ class Admin extends Component {
             ...this.state.allIngredients,
             this.state.addIngredientInput
           ]
-        });
+        },this.saveData);
       }
     }
   };
@@ -221,7 +225,8 @@ class Admin extends Component {
       allIngredients: this.state.allIngredients.filter(
         ingredientInArray => ingredientInArray !== ingredient
       )
-    });
+    },this.saveData);
+    
   };
 
   handleDeleteRecipe = recipeName => {
@@ -233,7 +238,7 @@ class Admin extends Component {
     }
     this.setState({
       recipes: newRecipes
-    });
+    },this.saveData);
   };
 
   handleAddIngredientToRecipe = () => {
@@ -383,7 +388,7 @@ class Admin extends Component {
             },
             editMode: false,
             recipeBeingEdited: ""
-          });
+          },this.saveData);
         }
       }
     }
@@ -461,10 +466,15 @@ class Admin extends Component {
                     this.handleCategorySelect(category)}
                   errorText={this.state.selectCategoryError}
                 >
+                  <MenuItem value={"meats"} primaryText={"meats"} />
                   <MenuItem value={"fruits"} primaryText={"fruits"} />
                   <MenuItem value={"vegetables"} primaryText={"vegetables"} />
-                  <MenuItem value={"meats"} primaryText={"meats"} />
+                  <MenuItem value={"dairy"} primaryText={"dairy"} />
+                  <MenuItem value={"fish"} primaryText={"fish"} />
+                  <MenuItem value={"herbs"} primaryText={"herbs"} />
                   <MenuItem value={"spices"} primaryText={"spices"} />
+                  <MenuItem value={"beverages"} primaryText={"beverages"} />
+                  <MenuItem value={"condiments"} primaryText={"condiments"} />
                   <MenuItem value={"other"} primaryText={"other"} />
                 </SelectField>
                 <RaisedButton
@@ -496,7 +506,7 @@ class Admin extends Component {
 
                 <TableBody displayRowCheckbox={false}>
                   {this.state.recipes.map((recipe, index) => (
-                    <TableRow>
+                    <TableRow key={index}>
                       <TableRowColumn style={{ paddingLeft: "72px" }}>
                         {recipe.name}
                       </TableRowColumn>
@@ -547,7 +557,7 @@ class Admin extends Component {
                 <br />
                 {this.state.currentRecipe.ingredientsAndQuantities.map(
                   (ingredient, index) => (
-                    <div>
+                    <div key={index}>
                       <TextField
                         hintText="Quantity"
                         style={{ float: "left" }}
@@ -561,10 +571,11 @@ class Admin extends Component {
                         onChange={(event, key, ingredient) =>
                           this.handleIngredientSelect(ingredient, index)}
                       >
-                        {this.state.allIngredients.map(ingredient => (
+                        {this.state.allIngredients.map((ingredient,index) => (
                           <MenuItem
                             value={ingredient}
                             primaryText={ingredient}
+                            key={index}
                           />
                         ))}
                       </SelectField>
@@ -601,13 +612,14 @@ class Admin extends Component {
                 </FloatingActionButton>
                 <br />
                 {this.state.currentRecipe.howToMake.map((step, index) => (
-                  <div>
+                  <div key={index}> 
                     <TextField
                       style={{ width: "80%" }}
                       hintText="How To Make"
                       value={step}
                       onChange={(event, value) =>
                         this.handleStepInput(value, index)}
+                        
                     />
                     <FloatingActionButton
                       mini={true}
