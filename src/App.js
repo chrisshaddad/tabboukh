@@ -12,6 +12,37 @@ import FloatingActionButton from "material-ui/FloatingActionButton";
 import ContentUndo from "material-ui/svg-icons/content/undo";
 import RaisedButton from "material-ui/RaisedButton";
 
+const images = [
+  "/food1.jpg",
+  "/food2.jpg",
+  "/food3.jpg",
+  "/food4.jpeg",
+  "/food5.jpg",
+  "/food6.jpg",
+  "/food7.jpg",
+  "/food8.jpg",
+  "/food9.jpg",
+  "/food10.jpg",
+  "/food11.jpg",
+  "/food12.jpg",
+  "/food13.jpg",
+  "/food14.jpg",
+  "/food15.jpg",
+  "/food16.jpg",
+  "/food17.jpg",
+  "/food18.jpeg",
+  "/food19.jpg",
+  "/food20.jpg"
+]
+
+let allImages = [];
+let imageLoop = 100;
+while(imageLoop){
+  allImages = [...allImages,...images]
+  imageLoop--; 
+}
+
+
 const styles = {
   chip: {
     margin: 4,
@@ -90,9 +121,7 @@ class App extends Component {
           ingredients: []
         }
       ],
-      availableIngredients: [
-
-      ],
+      availableIngredients: [],
       allIngredients: [],
       recipes: [],
       recipeCols: 3,
@@ -102,11 +131,12 @@ class App extends Component {
         ingredientsAndQuantities: [],
         howToMake: [],
         ingredients: []
-      },searchText:""
+      },
+      searchText: ""
     };
   }
 
-  combineData=(ingredients,recipes)=>{
+  combineData = (ingredients, recipes) => {
     let allIngredientsCombined = [];
     for (let i = 0; i < ingredients.length; i++) {
       allIngredientsCombined = [
@@ -115,11 +145,11 @@ class App extends Component {
       ];
     }
     this.setState({
-      ingredientsCategories:ingredients,
-      recipes:recipes,
+      ingredientsCategories: ingredients,
+      recipes: recipes,
       allIngredients: allIngredientsCombined
     });
-  }
+  };
 
   componentDidMount() {
     this.getData();
@@ -128,10 +158,10 @@ class App extends Component {
   getData = () => {
     fetch("http://localhost:3001")
       .then(res => res.json())
-      .then( ({ingredients,recipes}) =>
-        this.combineData(ingredients,recipes)
+      .then(({ ingredients, recipes }) =>
+        this.combineData(ingredients, recipes)
       )
-      .catch(err=>console.log(err))
+      .catch(err => console.log(err));
   };
 
   handleUpdateInput = ingredient => {
@@ -144,7 +174,7 @@ class App extends Component {
       this.setState({
         availableIngredients: [...this.state.availableIngredients, ingredient],
         allIngredients: newAllIngredients,
-        searchText:""
+        searchText: ""
       });
     }
   };
@@ -213,6 +243,10 @@ class App extends Component {
     });
   };
 
+  handleAutocompleteInput = text => {
+    this.setState({ searchText: text });
+  };
+
   handleRemoveAllIngredients = () => {
     this.setState({
       availableIngredients: []
@@ -234,7 +268,14 @@ class App extends Component {
           title={recipe.name}
           onClick={e => this.handleRecipeClick(recipe.name)}
         >
-          <img src={recipe.image} alt={recipe.name} />
+          <img
+            src={
+              recipe.name === "Beef with chocolate sauce"
+                ? "/chocobeef.jpg"
+                : allImages[index]
+            }
+            alt={recipe.name}
+          />
         </GridTile>
       );
     });
@@ -262,7 +303,9 @@ class App extends Component {
           textAlign: "center"
         }}
       >
-        <h1>Select more Ingredients to get recipes!</h1>
+        <h1>Tabboukh</h1>
+        <h2 style={{fontSize:"23px"}}>The website that shows you what you can cook with what you find home!</h2>
+        <h3>Select more Ingredients to get recipes!</h3>
       </div>
     );
   }
@@ -319,7 +362,14 @@ class App extends Component {
                     }
                   >
                     <img
-                      src={this.state.currentRecipe.image}
+                      src={
+                        this.state.currentRecipe.name ===
+                        "Beef with chocolate sauce"
+                          ? "/chocobeef.jpg"
+                          : allImages[
+                              recipesAvailable.indexOf(this.state.currentRecipe)
+                            ]
+                      }
                       alt={this.state.currentRecipe.name}
                     />
                   </CardMedia>
@@ -384,16 +434,18 @@ class App extends Component {
                   dataSource={this.state.allIngredients}
                   filter={AutoComplete.caseInsensitiveFilter}
                   maxSearchResults={8}
-                  onNewRequest={(ingredient,index)=>this.handleUpdateInput(ingredient)}
+                  onNewRequest={(ingredient, index) =>
+                    this.handleUpdateInput(ingredient)}
                   fullWidth={true}
                   searchText={this.state.searchText}
+                  onUpdateInput={text => this.handleAutocompleteInput(text)}
                   //style={{width:'200px'}}
                 />
                 {this.state.availableIngredients.length > 0 ? (
                   <RaisedButton
                     fullWidth={true}
                     label="Remove All Ingredients"
-                    backgroundColor={"red"}
+                    backgroundColor={"#bcb3b3"}
                     style={{ paddingBottom: "-10px" }}
                     onClick={e => this.handleRemoveAllIngredients()}
                   />
